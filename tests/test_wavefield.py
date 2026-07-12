@@ -148,3 +148,68 @@ def test_raw_phase_to_wavefield_pipeline():
     # With a scalar sensitivity, output scales by 1/k.
     field_disp = wf.raw_phase_to_wavefield(phase, unwrap=False, halve=False, meg_sensitivity=2.0)
     np.testing.assert_allclose(field_disp, field / 2.0, atol=1e-10)
+
+
+def _synthetic_temporal_series(n_offset=8, amp=1.7, temporal_phase=0.6, nx=4, ny=4, nz=2):
+    """Real motion field sampled across one vibration cycle.
+
+    ``xi(t_k) = amp * cos(2*pi*k/n_offset + temporal_phase)`` for
+    ``k = 0..n_offset-1`` along axis 3, so the first temporal harmonic
+    must recover ``amp * exp(1j*temporal_phase)`` exactly.
+    """
+    k = np.arange(n_offset)
+    series = amp * np.cos(2 * np.pi * k / n_offset + temporal_phase)
+    # Broadcast the same series into every voxel (axes x,y,z) and one
+    # direction/frequency, offset along axis 3.
+    field = np.zeros((nx, ny, nz, n_offset, 1, 1))
+    field[..., 0, 0] = series[None, None, None, :]
+    return field, amp, temporal_phase
+
+
+def test_temporal_harmonic_recovers_amplitude_and_phase():
+    field, amp, tphase = _synthetic_temporal_series()
+    wave = wf.temporal_harmonic(field, offset_axis=3, harmonic=1)
+    # Offset axis removed.
+    assert wave.shape == (4, 4, 2, 1, 1)
+    expected = amp * np.exp(1j * tphase)
+    np.testing.assert_allclose(wave[..., 0, 0], expected, atol=1e-10)
+
+
+def test_temporal_harmonic_flip_conjugates():
+    field, amp, tphase = _synthetic_temporal_series()
+    n_offset = field.shape[3]
+    wave = wf.temporal_harmonic(field, offset_axis=3, harmonic=1, flip=False)
+    wave_flip = wf.temporal_harmonic(field, offset_axis=3, harmonic=1, flip=True)
+    # Reversing a length-N real sequence maps X[1] -> exp(2j*pi/N)*conj(X[1]):
+    # the magnitude (displacement amplitude) is preserved and the temporal
+    # phase / propagation direction is reversed.
+    np.testing.assert_allclose(np.abs(wave), np.abs(wave_flip), atol=1e-10)
+    np.testing.assert_allclose(
+        wave_flip, np.exp(2j * np.pi / n_offset) * np.conj(wave), atol=1e-10
+    )
+
+
+def test_temporal_harmonic_out_of_range_raises():
+    field, _, _ = _synthetic_temporal_series(n_offset=4)
+    with pytest.raises(ValueError):
+        wf.temporal_harmonic(field, offset_axis=3, harmonic=4)
+
+
+def test_pipeline_harmonic_extraction():
+    # Build a raw acquisition whose combined motion varies sinusoidally
+    # across temporal offsets, then run the full pipeline with harmonic=1.
+    n_offset = 4
+    amp, tphase = 0.2, 0.4
+    k = np.arange(n_offset)
+    motion = amp * np.cos(2 * np.pi * k / n_offset + tphase)
+    nx = ny = 4
+    nz = 2
+    # Interleave +/- polarities: 2*n_offset encodings on axis 3.
+    phase = np.zeros((nx, ny, nz, 2 * n_offset, 1, 1))
+    background = 0.05
+    for j in range(n_offset):
+        phase[..., 2 * j, 0, 0] = motion[j] + background
+        phase[..., 2 * j + 1, 0, 0] = -motion[j] + background
+    wave = wf.raw_phase_to_wavefield(phase, unwrap=False, halve=True, harmonic=1)
+    assert wave.shape == (nx, ny, nz, 1, 1)
+    np.testing.assert_allclose(wave[..., 0, 0], amp * np.exp(1j * tphase), atol=1e-10)

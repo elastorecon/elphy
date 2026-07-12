@@ -61,6 +61,7 @@ __all__ = [
     "unwrap_field",
     "phase_to_displacement",
     "meg_sensitivity_muthupillai",
+    "temporal_harmonic",
     "raw_phase_to_wavefield",
 ]
 
@@ -280,6 +281,72 @@ def meg_sensitivity_muthupillai(
     return (2.0 * gyromagnetic_ratio * n_cycles * meg_period_s * gradient_T_per_m) / np.pi
 
 
+def temporal_harmonic(field, offset_axis=3, harmonic=1, flip=False):
+    """Extract the complex harmonic amplitude from a temporal-offset series.
+
+    A steady-state MRE acquisition samples the tissue motion at several
+    equally spaced phase offsets (snapshots) across one vibration cycle.
+    Taking the discrete Fourier transform along that offset axis
+    decomposes the per-voxel time series into its temporal harmonics;
+    the first harmonic is the complex amplitude of motion at the drive
+    frequency, whose magnitude is the displacement amplitude and whose
+    argument is the temporal phase of the travelling wave.
+
+    For a real motion ``xi(t) = A * cos(2*pi*f*t + varphi)`` sampled at
+    ``n_offset`` offsets, the FFT bin at the fundamental has magnitude
+    ``A * n_offset / 2``.  Dividing by ``n_offset / 2`` therefore returns
+    the physical complex amplitude ``A * exp(i*varphi)`` directly.  This
+    ports the temporal-FFT step of the MATLAB ``proc_mbmre_2`` pipeline::
+
+        fft_img = fft(disp_img, [], 5) / (nj / 2);
+        wave_img = fft_img(:, :, :, :, 2);   % first harmonic
+
+    Parameters
+    ----------
+    field : array_like
+        Real motion field (unwrapped phase or displacement) with a
+        temporal-offset axis.  In the canonical layout the offset axis
+        is axis ``3`` after :func:`combine_encodings` has collapsed the
+        polarity pairs to one value per offset.
+    offset_axis : int, optional
+        Axis holding the temporal offsets to transform over
+        (default ``3``).
+    harmonic : int, optional
+        Which temporal harmonic to return (default ``1``, the
+        fundamental at the drive frequency).  ``0`` returns the temporal
+        mean (DC); note the ``n_offset / 2`` normalisation is not the
+        conventional DC scaling.
+    flip : bool, optional
+        If ``True`` reverse the offset axis before the transform.  This
+        conjugates the result (reverses the sign of the temporal phase /
+        propagation direction) and matches the ``flip(pimg, 5)`` step in
+        the MATLAB reference, whose orientation is acquisition-specific.
+        Default ``False``.
+
+    Returns
+    -------
+    numpy.ndarray
+        Complex harmonic amplitude with the offset axis removed.  Its
+        shape is ``field.shape`` without ``offset_axis``; magnitude is
+        the displacement amplitude and phase is the temporal phase.
+
+    Raises
+    ------
+    ValueError
+        If ``harmonic`` is out of range for the number of offsets.
+    """
+    field = np.asarray(field, dtype=float)
+    n_offset = field.shape[offset_axis]
+    if not 0 <= harmonic < n_offset:
+        raise ValueError(
+            f"harmonic {harmonic} out of range for {n_offset} offsets along axis {offset_axis}"
+        )
+    if flip:
+        field = np.flip(field, axis=offset_axis)
+    spectrum = np.fft.fft(field, axis=offset_axis) / (n_offset / 2.0)
+    return np.take(spectrum, harmonic, axis=offset_axis)
+
+
 def raw_phase_to_wavefield(
     phase,
     mask=None,
@@ -288,6 +355,8 @@ def raw_phase_to_wavefield(
     polarity="even_positive",
     meg_sensitivity=None,
     unwrap=True,
+    harmonic=None,
+    harmonic_flip=False,
 ):
     """Full raw-phase to displacement-wavefield pipeline.
 
@@ -316,13 +385,24 @@ def raw_phase_to_wavefield(
     unwrap : bool, optional
         Whether to spatially unwrap the combined phase (default
         ``True``).
+    harmonic : int or None, optional
+        If given, extract this temporal harmonic across the offset axis
+        via :func:`temporal_harmonic` as a final step, returning the
+        complex motion amplitude at the drive frequency (``harmonic=1``).
+        If ``None`` (default) the real per-offset wavefield is returned.
+    harmonic_flip : bool, optional
+        Passed to :func:`temporal_harmonic` as ``flip`` when
+        ``harmonic`` is given; reverses the offset axis (conjugates the
+        result).  Default ``False``.
 
     Returns
     -------
     numpy.ndarray
-        The displacement wavefield: unwrapped phase in radians, or
-        physical displacement if ``meg_sensitivity`` was supplied.  The
-        encoding axis is halved (one value per temporal offset).
+        The displacement wavefield.  With ``harmonic=None`` (default):
+        real unwrapped phase in radians, or physical displacement if
+        ``meg_sensitivity`` was supplied, with the encoding axis halved
+        (one value per temporal offset).  With ``harmonic`` set: the
+        complex harmonic amplitude with the offset axis removed.
     """
     combined = combine_encodings(
         phase, encoding_axis=encoding_axis, halve=halve, polarity=polarity
@@ -330,4 +410,8 @@ def raw_phase_to_wavefield(
     field = unwrap_field(combined, mask=mask) if unwrap else combined
     if meg_sensitivity is not None:
         field = phase_to_displacement(field, meg_sensitivity)
+    if harmonic is not None:
+        field = temporal_harmonic(
+            field, offset_axis=encoding_axis, harmonic=harmonic, flip=harmonic_flip
+        )
     return field

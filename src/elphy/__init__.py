@@ -25,6 +25,7 @@ from .wavefield import (
     meg_sensitivity_muthupillai,
     phase_to_displacement,
     raw_phase_to_wavefield,
+    temporal_harmonic,
     unwrap_field,
     wrap_to_pi,
 )
@@ -35,6 +36,7 @@ __all__ = [
     "unwrap_field",
     "phase_to_displacement",
     "meg_sensitivity_muthupillai",
+    "temporal_harmonic",
     "raw_phase_to_wavefield",
     "load_mat_array",
     "load_scidb_feng2025",
