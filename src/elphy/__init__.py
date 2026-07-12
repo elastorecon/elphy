@@ -13,6 +13,15 @@ __version__ = "0.1.0"
 
 # Core wavefield operations (numpy-only; always importable).
 # I/O helpers (scipy / h5py imported lazily inside the functions).
+from .export import (
+    InversionPayload,
+    build_inversion_payload,
+    export_inversion_mat,
+    export_inversion_nifti,
+    export_inversion_npz,
+    export_wavefield,
+    read_inversion_npz,
+)
 from .io import (
     FENG2025_FREQUENCIES_HZ,
     FENG2025_MEG_SENSITIVITY_RAD_PER_MM,
@@ -58,6 +67,13 @@ __all__ = [
     "octahedral_normal_strain",
     "motion_noise_amplitude",
     "oss_snr",
+    "InversionPayload",
+    "build_inversion_payload",
+    "export_inversion_mat",
+    "export_inversion_npz",
+    "read_inversion_npz",
+    "export_inversion_nifti",
+    "export_wavefield",
     "load_mat_array",
     "load_scidb_feng2025",
     "MREWavefield",

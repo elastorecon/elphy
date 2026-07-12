@@ -59,6 +59,10 @@ Features
   2011): a coordinate-independent, per-voxel and ROI measure of motion
   quality computed from the strain tensor of the complex wavefield, in
   ``elphy.strain``.
+* **Solver-agnostic export** — write the complex wavefield to a
+  self-describing inversion payload with writers for MATLAB ``.mat`` (the
+  historical ``mbmre`` handoff), NumPy ``.npz`` (lossless round trip), and
+  per-component NIfTI, in ``elphy.export``.
 * **Pipeline** — a single ``raw_phase_to_wavefield`` call chains the core
   steps (polarity combination, unwrapping, phase→displacement, and
   optional harmonic extraction) from raw phase to a wavefield ready for
@@ -100,7 +104,6 @@ Installation
 Roadmap
 -------
 
-* Solver-agnostic export for downstream inversion codes.
 * Alignment of derivatives with the BIDS standard, following the
   qMRI-BIDS extension (BEP001) precedent, toward a BIDS extension
   proposal for MRE.

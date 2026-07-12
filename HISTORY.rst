@@ -15,6 +15,10 @@ Unreleased
 * Add an ``elphy.strain`` module with the octahedral shear strain SNR of
   McGarry et al. (2011): strain tensor, time-averaged OSS/ONS, motion-noise
   amplitude, and ``oss_snr`` (scalar and per-voxel distribution).
+* Add an ``elphy.export`` module: a solver-agnostic inversion payload with
+  writers for MATLAB ``.mat`` (the ``mbmre`` handoff), NumPy ``.npz``
+  (lossless round trip via ``read_inversion_npz``), and per-component
+  NIfTI.
 * Modernize packaging: PEP 621 ``pyproject.toml``, ``src/`` layout,
   GitHub Actions CI (Python 3.10-3.14), and ``ruff`` for linting and
   formatting.
