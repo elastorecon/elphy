@@ -20,6 +20,11 @@ from .io import (
     load_mat_array,
     load_scidb_feng2025,
 )
+from .operators import (
+    bandpass_filter,
+    curl,
+    divergence,
+)
 from .wavefield import (
     combine_encodings,
     meg_sensitivity_muthupillai,
@@ -38,6 +43,9 @@ __all__ = [
     "meg_sensitivity_muthupillai",
     "temporal_harmonic",
     "raw_phase_to_wavefield",
+    "bandpass_filter",
+    "curl",
+    "divergence",
     "load_mat_array",
     "load_scidb_feng2025",
     "MREWavefield",

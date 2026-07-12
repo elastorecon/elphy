@@ -47,8 +47,18 @@ Features
 * **Phase → displacement** — convert motion-encoded phase to physical
   displacement via the Muthupillai (1995) MEG sensitivity, replacing
   hard-coded scale factors with explicit sequence physics.
-* **Pipeline** — a single ``raw_phase_to_wavefield`` call chains the
-  steps from raw phase to a displacement wavefield ready for inversion.
+* **Temporal-harmonic extraction** — take the temporal Fourier transform
+  across the vibration-cycle offsets and return the complex motion
+  amplitude at the drive frequency (the first harmonic).
+* **Wavefield operators** — curl and divergence (to separate the shear
+  and compressional components) and a radial Butterworth k-space
+  band-pass filter.  These are provided as standalone, opt-in functions
+  in ``elphy.operators``; they are *not* applied by the default pipeline,
+  since not every MRE method uses them.
+* **Pipeline** — a single ``raw_phase_to_wavefield`` call chains the core
+  steps (polarity combination, unwrapping, phase→displacement, and
+  optional harmonic extraction) from raw phase to a wavefield ready for
+  inversion.
 
 A canonical 6-D array layout ``[x, y, z, encoding, direction, frequency]``
 is used throughout.
@@ -86,10 +96,7 @@ Installation
 Roadmap
 -------
 
-* Temporal-harmonic (first-harmonic) extraction into complex motion
-  fields.
-* Wavefield operators (curl/divergence, k-space filters) and quality
-  metrics (octahedral-shear-strain SNR).
+* Wavefield quality metrics (octahedral-shear-strain SNR).
 * Solver-agnostic export for downstream inversion codes.
 * Alignment of derivatives with the BIDS standard, following the
   qMRI-BIDS extension (BEP001) precedent, toward a BIDS extension
