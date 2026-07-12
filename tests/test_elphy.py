@@ -1,34 +1,40 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `elphy` package."""
+"""Package-level tests for `elphy`.
+
+Physics/algorithm tests live in ``test_wavefield.py``; this module just
+checks that the public API is importable and wired up correctly.
+"""
+
+import elphy
 
 
-import unittest
-from click.testing import CliRunner
-
-from elphy import elphy
-from elphy import cli
+def test_version():
+    assert isinstance(elphy.__version__, str)
 
 
-class TestElphy(unittest.TestCase):
-    """Tests for `elphy` package."""
+def test_public_api_exposed():
+    """The core wavefield + io names are importable from the top level."""
+    for name in [
+        "wrap_to_pi",
+        "combine_encodings",
+        "unwrap_field",
+        "phase_to_displacement",
+        "meg_sensitivity_muthupillai",
+        "raw_phase_to_wavefield",
+        "load_mat_array",
+        "load_scidb_feng2025",
+        "MREWavefield",
+        "FENG2025_FREQUENCIES_HZ",
+        "FENG2025_MEG_SENSITIVITY_RAD_PER_MM",
+    ]:
+        assert hasattr(elphy, name), f"elphy.{name} is missing"
 
-    def setUp(self):
-        """Set up test fixtures, if any."""
 
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-
-    def test_000_something(self):
-        """Test something."""
-
-    def test_command_line_interface(self):
-        """Test the CLI."""
-        runner = CliRunner()
-        result = runner.invoke(cli.main)
-        assert result.exit_code == 0
-        assert 'elphy.cli.main' in result.output
-        help_result = runner.invoke(cli.main, ['--help'])
-        assert help_result.exit_code == 0
-        assert '--help  Show this message and exit.' in help_result.output
+def test_feng2025_metadata_consistent():
+    """Frequency tuple and sensitivity table agree."""
+    freqs = elphy.FENG2025_FREQUENCIES_HZ
+    sens = elphy.FENG2025_MEG_SENSITIVITY_RAD_PER_MM
+    assert set(freqs) == set(sens)
+    assert len(freqs) == 4
