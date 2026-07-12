@@ -12,6 +12,9 @@ Unreleased
   optional ``harmonic`` step in ``raw_phase_to_wavefield``.
 * Add an ``elphy.operators`` module with opt-in wavefield operators:
   curl, divergence, and a radial Butterworth k-space band-pass filter.
+* Add an ``elphy.strain`` module with the octahedral shear strain SNR of
+  McGarry et al. (2011): strain tensor, time-averaged OSS/ONS, motion-noise
+  amplitude, and ``oss_snr`` (scalar and per-voxel distribution).
 * Modernize packaging: PEP 621 ``pyproject.toml``, ``src/`` layout,
   GitHub Actions CI (Python 3.10-3.14), and ``ruff`` for linting and
   formatting.

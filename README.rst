@@ -55,6 +55,10 @@ Features
   band-pass filter.  These are provided as standalone, opt-in functions
   in ``elphy.operators``; they are *not* applied by the default pipeline,
   since not every MRE method uses them.
+* **Quality metrics** — octahedral shear strain SNR (McGarry et al.,
+  2011): a coordinate-independent, per-voxel and ROI measure of motion
+  quality computed from the strain tensor of the complex wavefield, in
+  ``elphy.strain``.
 * **Pipeline** — a single ``raw_phase_to_wavefield`` call chains the core
   steps (polarity combination, unwrapping, phase→displacement, and
   optional harmonic extraction) from raw phase to a wavefield ready for
@@ -96,7 +100,6 @@ Installation
 Roadmap
 -------
 
-* Wavefield quality metrics (octahedral-shear-strain SNR).
 * Solver-agnostic export for downstream inversion codes.
 * Alignment of derivatives with the BIDS standard, following the
   qMRI-BIDS extension (BEP001) precedent, toward a BIDS extension

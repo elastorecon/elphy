@@ -25,6 +25,13 @@ from .operators import (
     curl,
     divergence,
 )
+from .strain import (
+    motion_noise_amplitude,
+    octahedral_normal_strain,
+    octahedral_shear_strain,
+    oss_snr,
+    strain_tensor,
+)
 from .wavefield import (
     combine_encodings,
     meg_sensitivity_muthupillai,
@@ -46,6 +53,11 @@ __all__ = [
     "bandpass_filter",
     "curl",
     "divergence",
+    "strain_tensor",
+    "octahedral_shear_strain",
+    "octahedral_normal_strain",
+    "motion_noise_amplitude",
+    "oss_snr",
     "load_mat_array",
     "load_scidb_feng2025",
     "MREWavefield",

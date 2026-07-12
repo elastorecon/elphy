@@ -100,3 +100,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# macOS finder metadata
+.DS_Store
+
+# Local reference material (papers, not for distribution)
+References/
