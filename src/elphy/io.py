@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Input/output helpers for MRE data.
 
 Loaders that bring reconstructed MRE data into the canonical in-memory
@@ -15,8 +14,7 @@ Currently supported:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -98,10 +96,10 @@ def load_mat_array(path, var=None):
                     raise ValueError(
                         f"expected exactly one variable in {path}, found {keys}; "
                         "pass var= to disambiguate"
-                    )
+                    ) from None
                 var = keys[0]
             if var not in f:
-                raise ValueError(f"variable {var!r} not found in {path}; have {keys}")
+                raise ValueError(f"variable {var!r} not found in {path}; have {keys}") from None
             # h5py returns MATLAB arrays with reversed axis order.
             return np.asarray(f[var]).T
 
@@ -133,12 +131,12 @@ class MREWavefield:
         Optional label (e.g. ``"phantom"``, ``"brain"``, ``"liver"``).
     """
 
-    phase_raw: Optional[np.ndarray] = None
-    mag: Optional[np.ndarray] = None
-    displacement: Optional[np.ndarray] = None
-    modulus: Optional[np.ndarray] = None
-    frequencies_hz: Optional[tuple] = None
-    meg_sensitivity_rad_per_mm: Optional[dict] = None
+    phase_raw: np.ndarray | None = None
+    mag: np.ndarray | None = None
+    displacement: np.ndarray | None = None
+    modulus: np.ndarray | None = None
+    frequencies_hz: tuple | None = None
+    meg_sensitivity_rad_per_mm: dict | None = None
     name: str = ""
 
     @property
@@ -193,8 +191,8 @@ def load_scidb_feng2025(directory, name="", load=("PhaseRaw", "Mag", "U", "G")):
         Populated container with dataset frequency/sensitivity metadata
         attached.
     """
-    import os
     import glob
+    import os
 
     directory = os.fspath(directory)
     if not name:

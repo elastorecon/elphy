@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Core MRE wavefield operations.
 
 This module contains the general, scanner-agnostic operations that turn
@@ -138,9 +137,7 @@ def combine_encodings(phase, encoding_axis=3, halve=False, polarity="even_positi
         pos = np.take(phase, np.arange(1, n, 2), axis=encoding_axis)
         neg = np.take(phase, np.arange(0, n, 2), axis=encoding_axis)
     else:
-        raise ValueError(
-            f"polarity must be 'even_positive' or 'odd_positive', got {polarity!r}"
-        )
+        raise ValueError(f"polarity must be 'even_positive' or 'odd_positive', got {polarity!r}")
     diff = wrap_to_pi(pos - neg)
     if halve:
         diff = diff / 2.0
@@ -245,8 +242,9 @@ def phase_to_displacement(phase, meg_sensitivity):
     return phase / k
 
 
-def meg_sensitivity_muthupillai(n_cycles, meg_period_s, gradient_T_per_m,
-                                gyromagnetic_ratio=267.513e6):
+def meg_sensitivity_muthupillai(
+    n_cycles, meg_period_s, gradient_T_per_m, gyromagnetic_ratio=267.513e6
+):
     """MEG phase sensitivity from sequence parameters (Muthupillai 1995).
 
     Encoding sensitivity ``k`` (radians of phase per metre of
@@ -282,9 +280,15 @@ def meg_sensitivity_muthupillai(n_cycles, meg_period_s, gradient_T_per_m,
     return (2.0 * gyromagnetic_ratio * n_cycles * meg_period_s * gradient_T_per_m) / np.pi
 
 
-def raw_phase_to_wavefield(phase, mask=None, encoding_axis=3, halve=False,
-                           polarity="even_positive", meg_sensitivity=None,
-                           unwrap=True):
+def raw_phase_to_wavefield(
+    phase,
+    mask=None,
+    encoding_axis=3,
+    halve=False,
+    polarity="even_positive",
+    meg_sensitivity=None,
+    unwrap=True,
+):
     """Full raw-phase to displacement-wavefield pipeline.
 
     Convenience wrapper chaining the standard steps:

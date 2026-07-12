@@ -64,11 +64,12 @@ Ready to contribute? Here's how to set up `elphy` for local development.
 
     $ git clone git@github.com:your_name_here/elphy.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtual environment (Python 3.10+).
+   The ``dev`` extra pulls in the test and lint tooling::
 
-    $ mkvirtualenv elphy
     $ cd elphy/
-    $ python setup.py develop
+    $ python -m venv .venv
+    $ .venv/bin/pip install -e ".[dev]"
 
 4. Create a branch for local development::
 
@@ -76,14 +77,15 @@ Ready to contribute? Here's how to set up `elphy` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes pass the linter
+   and the tests, optionally across multiple Python versions with tox::
 
-    $ flake8 elphy tests
-    $ python setup.py test or py.test
-    $ tox
+    $ ruff check .
+    $ ruff format --check .
+    $ pytest
+    $ tox            # runs the tests on py3.10-3.14 plus lint
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   ``ruff``, ``pytest``, and ``tox`` are installed by the ``dev`` extra above.
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -102,9 +104,10 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.7, 3.4, 3.5 and 3.6, and for PyPy. Check
-   https://travis-ci.org/aaronta/elphy/pull_requests
-   and make sure that the tests pass for all supported Python versions.
+3. The pull request should work for Python 3.10 through 3.14. GitHub
+   Actions runs the test matrix automatically on each pull request; make
+   sure all jobs pass:
+   https://github.com/Elastography/elphy/actions
 
 Tips
 ----

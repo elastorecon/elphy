@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Tests for :mod:`elphy.wavefield`.
 
 These tests use synthetic phase data with a known ground truth so they
@@ -19,8 +18,7 @@ import pytest
 from elphy import wavefield as wf
 
 
-def _synthetic_acquisition(nx=16, ny=16, nz=4, n_offset=4, n_dir=3, n_freq=2,
-                           motion_amp=0.4, seed=0):
+def _synthetic_acquisition(nx=16, ny=16, nz=4, n_offset=4, n_dir=3, n_freq=2, motion_amp=0.4):
     """Build a synthetic raw-phase array with known motion/background.
 
     Returns
@@ -35,10 +33,11 @@ def _synthetic_acquisition(nx=16, ny=16, nz=4, n_offset=4, n_dir=3, n_freq=2,
         Ground-truth background phase (per voxel, broadcast over the
         encoding axis).
     """
-    rng = np.random.default_rng(seed)
     # Smooth spatial background (large, slowly varying).
     xx, yy, zz = np.meshgrid(
-        np.linspace(0, 1, nx), np.linspace(0, 1, ny), np.linspace(0, 1, nz),
+        np.linspace(0, 1, nx),
+        np.linspace(0, 1, ny),
+        np.linspace(0, 1, nz),
         indexing="ij",
     )
     background = 0.9 * (xx + 0.5 * yy - 0.3 * zz)  # radians, smooth
@@ -147,7 +146,5 @@ def test_raw_phase_to_wavefield_pipeline():
     field = wf.raw_phase_to_wavefield(phase, unwrap=False, halve=False)
     np.testing.assert_allclose(field, wf.wrap_to_pi(2 * motion), atol=1e-10)
     # With a scalar sensitivity, output scales by 1/k.
-    field_disp = wf.raw_phase_to_wavefield(
-        phase, unwrap=False, halve=False, meg_sensitivity=2.0
-    )
+    field_disp = wf.raw_phase_to_wavefield(phase, unwrap=False, halve=False, meg_sensitivity=2.0)
     np.testing.assert_allclose(field_disp, field / 2.0, atol=1e-10)

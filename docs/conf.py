@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # elphy documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  9 13:47:02 2017.
@@ -20,7 +19,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath('../src'))
 
 import elphy
 
@@ -47,9 +47,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MR Elastography'
-copyright = u"2018, Aaron T Anderson"
-author = u"Aaron T Anderson"
+project = 'MR Elastography'
+copyright = "2018, Aaron T Anderson"
+author = "Aaron T Anderson"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -129,8 +129,8 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'elphy.tex',
-     u'MR Elastography Documentation',
-     u'Aaron T Anderson', 'manual'),
+     'MR Elastography Documentation',
+     'Aaron T Anderson', 'manual'),
 ]
 
 
@@ -140,7 +140,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'elphy',
-     u'MR Elastography Documentation',
+     'MR Elastography Documentation',
      [author], 1)
 ]
 
@@ -152,7 +152,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'elphy',
-     u'MR Elastography Documentation',
+     'MR Elastography Documentation',
      author,
      'elphy',
      'One line description of project.',
