@@ -59,6 +59,11 @@ Features
   2011): a coordinate-independent, per-voxel and ROI measure of motion
   quality computed from the strain tensor of the complex wavefield, in
   ``elphy.strain``.
+* **Material-property estimation** — two locally homogeneous inversions in
+  ``elphy.inversion``: curl-based algebraic (direct) Helmholtz inversion
+  (Oliphant 2001; Sinkus et al. 2005) for the complex shear modulus, and
+  local frequency estimation via lognormal quadrature filters (Knutsson
+  1994; Manduca et al. 1996) for shear stiffness.
 * **Solver-agnostic export** — write the complex wavefield to a
   self-describing inversion payload with writers for MATLAB ``.mat`` (the
   historical ``mbmre`` handoff), NumPy ``.npz`` (lossless round trip), and

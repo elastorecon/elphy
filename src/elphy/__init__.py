@@ -22,6 +22,13 @@ from .export import (
     export_wavefield,
     read_inversion_npz,
 )
+from .inversion import (
+    curl_based_inversion,
+    direct_inversion,
+    lfe_inversion,
+    local_frequency_estimation,
+    shear_stiffness,
+)
 from .io import (
     FENG2025_FREQUENCIES_HZ,
     FENG2025_MEG_SENSITIVITY_RAD_PER_MM,
@@ -67,6 +74,11 @@ __all__ = [
     "octahedral_normal_strain",
     "motion_noise_amplitude",
     "oss_snr",
+    "direct_inversion",
+    "curl_based_inversion",
+    "local_frequency_estimation",
+    "lfe_inversion",
+    "shear_stiffness",
     "InversionPayload",
     "build_inversion_payload",
     "export_inversion_mat",

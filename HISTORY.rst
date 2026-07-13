@@ -19,6 +19,10 @@ Unreleased
   writers for MATLAB ``.mat`` (the ``mbmre`` handoff), NumPy ``.npz``
   (lossless round trip via ``read_inversion_npz``), and per-component
   NIfTI.
+* Add an ``elphy.inversion`` module with two locally homogeneous
+  material-property estimators: curl-based algebraic (direct) Helmholtz
+  inversion for the complex shear modulus, and local frequency estimation
+  (lognormal quadrature filter bank) for shear stiffness.
 * Modernize packaging: PEP 621 ``pyproject.toml``, ``src/`` layout,
   GitHub Actions CI (Python 3.10-3.14), and ``ruff`` for linting and
   formatting.
