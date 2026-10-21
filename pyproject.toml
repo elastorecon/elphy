@@ -52,6 +52,9 @@ dev = [
     "sphinx>=5.0",
     "tox>=4.0",
 ]
+docs = [
+    "sphinx>=5.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/Elastography/elphy"

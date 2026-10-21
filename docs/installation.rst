@@ -5,22 +5,32 @@ Installation
 ============
 
 
+Requirements
+------------
+
+elphy requires Python 3.10 or newer. Its runtime dependencies (NumPy, SciPy,
+h5py, nibabel, scikit-image, and Click) are installed automatically.
+
+
 Stable release
 --------------
 
-To install MR Elastography, run this command in your terminal:
+.. note::
+
+   The ``elphy`` release currently on PyPI (0.1.0) predates the current code
+   base. Until a new release is published, install from source (below).
+
+To install the latest release from PyPI, run:
 
 .. code-block:: console
 
     $ pip install elphy
 
-This is the preferred method to install MR Elastography, as it will always install the most recent stable release.
-
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
 
 .. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+.. _Python installation guide: https://docs.python-guide.org/starting/installation/
 
 
 From sources
@@ -45,6 +55,13 @@ Once you have a copy of the source, you can install it with:
 .. code-block:: console
 
     $ pip install .
+
+For development (tests, linting, and building these docs), install in
+editable mode with the ``dev`` extra:
+
+.. code-block:: console
+
+    $ pip install -e ".[dev]"
 
 
 .. _Github repo: https://github.com/Elastography/elphy
