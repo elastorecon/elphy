@@ -23,8 +23,12 @@ def test_public_api_exposed():
         "meg_sensitivity_muthupillai",
         "raw_phase_to_wavefield",
         "load_mat_array",
+        "load_mbmre_for_inversion",
+        "load_nli_reconprops",
         "load_scidb_feng2025",
         "MREWavefield",
+        "MaterialPropertyMap",
+        "export_nli_nifti",
         "FENG2025_FREQUENCIES_HZ",
         "FENG2025_MEG_SENSITIVITY_RAD_PER_MM",
     ]:

@@ -37,6 +37,7 @@ dependencies = [
     "numpy>=1.20",
     "scipy>=1.6",
     "h5py>=3.0",
+    "nibabel>=3.0",
     "scikit-image>=0.18",
     "Click>=6.0",
 ]

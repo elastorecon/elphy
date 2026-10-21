@@ -15,10 +15,12 @@ __version__ = "0.1.0"
 # I/O helpers (scipy / h5py imported lazily inside the functions).
 from .export import (
     InversionPayload,
+    MaterialPropertyMap,
     build_inversion_payload,
     export_inversion_mat,
     export_inversion_nifti,
     export_inversion_npz,
+    export_nli_nifti,
     export_wavefield,
     read_inversion_npz,
 )
@@ -34,6 +36,8 @@ from .io import (
     FENG2025_MEG_SENSITIVITY_RAD_PER_MM,
     MREWavefield,
     load_mat_array,
+    load_mbmre_for_inversion,
+    load_nli_reconprops,
     load_scidb_feng2025,
 )
 from .operators import (
@@ -86,7 +90,11 @@ __all__ = [
     "read_inversion_npz",
     "export_inversion_nifti",
     "export_wavefield",
+    "MaterialPropertyMap",
+    "export_nli_nifti",
     "load_mat_array",
+    "load_mbmre_for_inversion",
+    "load_nli_reconprops",
     "load_scidb_feng2025",
     "MREWavefield",
     "FENG2025_FREQUENCIES_HZ",

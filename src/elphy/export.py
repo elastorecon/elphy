@@ -49,6 +49,8 @@ __all__ = [
     "read_inversion_npz",
     "export_inversion_nifti",
     "export_wavefield",
+    "MaterialPropertyMap",
+    "export_nli_nifti",
 ]
 
 
@@ -351,6 +353,127 @@ def export_inversion_nifti(directory, payload, frequency_index=None, prefix=None
         p = os.path.join(directory, f"{pre}_magnitude.nii.gz")
         nib.save(nib.Nifti1Image(np.asarray(payload.magnitude, dtype=np.float32), aff), p)
         written.append(p)
+    return written
+
+
+@dataclass
+class MaterialPropertyMap:
+    """Canonical representation of an NLI material-property reconstruction.
+
+    Counterpart to :class:`InversionPayload`, for the *output* of a
+    nonlinear-inversion (NLI) solver rather than the displacement wavefield
+    fed into one: per-voxel complex shear/bulk modulus and density, a
+    damping-ratio map, and a Rayleigh-composition classification, all over
+    the same spatial grid (see :func:`elphy.io.load_nli_reconprops`).
+
+    Attributes
+    ----------
+    shear_modulus_pa : numpy.ndarray
+        Complex shear modulus ``[x, y, z]`` in Pa (real = storage, imag =
+        loss modulus).
+    bulk_modulus_pa : numpy.ndarray
+        Complex bulk modulus ``[x, y, z]`` in Pa.
+    density_kg_m3 : numpy.ndarray
+        Complex density ``[x, y, z]`` in kg/m^3.
+    damping_ratio : numpy.ndarray
+        Damping ratio ``[x, y, z]`` (dimensionless).
+    rayleigh_composition : numpy.ndarray
+        Rayleigh composition classification ``[x, y, z]``.
+    voxel_size_mm : numpy.ndarray
+        Spatial spacing ``(dx, dy, dz)`` of the property maps, in
+        millimetres.
+    magnitude : numpy.ndarray or None
+        Structural reference image over the domain used for the
+        estimation; may sit on a smaller/cropped grid than the property
+        maps.
+    magnitude_voxel_size_mm : numpy.ndarray or None
+        Spacing of ``magnitude``, in millimetres (defaults to
+        ``voxel_size_mm`` when not given separately).
+    name : str
+        Short label for the sample.
+    metadata : dict
+        Free-form provenance (reconstruction parameters, source path).
+    """
+
+    shear_modulus_pa: np.ndarray
+    bulk_modulus_pa: np.ndarray
+    density_kg_m3: np.ndarray
+    damping_ratio: np.ndarray
+    rayleigh_composition: np.ndarray
+    voxel_size_mm: np.ndarray
+    magnitude: np.ndarray | None = None
+    magnitude_voxel_size_mm: np.ndarray | None = None
+    name: str = "elphy_nli"
+    metadata: dict = _dc_field(default_factory=dict)
+
+
+def export_nli_nifti(directory, payload, prefix=None):
+    """Write per-map NIfTI volumes and a metadata sidecar for an NLI
+    material-property reconstruction.
+
+    Writes eight ``.nii.gz`` volumes - real/imaginary shear modulus, real/
+    imaginary bulk modulus, real/imaginary density, damping ratio, and
+    Rayleigh composition - plus the structural ``magnitude`` reference (if
+    present, on its own grid/affine), and one JSON sidecar holding
+    ``payload.metadata`` (e.g. the NLI solver's reconstruction parameters),
+    for alignment with BIDS-style derivatives. Requires :mod:`nibabel`.
+
+    Parameters
+    ----------
+    directory : str or path-like
+        Output directory (created if missing).
+    payload : MaterialPropertyMap
+    prefix : str, optional
+        Filename prefix. Default ``payload.name``.
+
+    Returns
+    -------
+    list of str
+        The paths written (NIfTI files followed by the JSON sidecar).
+    """
+    import json
+    import os
+
+    import nibabel as nib
+
+    pre = prefix or payload.name
+    os.makedirs(directory, exist_ok=True)
+    written = []
+
+    aff = _affine(payload.voxel_size_mm)
+    maps = (
+        ("realshear", payload.shear_modulus_pa.real),
+        ("imagshear", payload.shear_modulus_pa.imag),
+        ("realbulk", payload.bulk_modulus_pa.real),
+        ("imagbulk", payload.bulk_modulus_pa.imag),
+        ("realdens", payload.density_kg_m3.real),
+        ("imagdens", payload.density_kg_m3.imag),
+        ("dampingratio", payload.damping_ratio),
+        ("rc", payload.rayleigh_composition),
+    )
+    for suffix, arr in maps:
+        p = os.path.join(directory, f"{pre}_{suffix}.nii.gz")
+        nib.save(nib.Nifti1Image(np.asarray(arr, dtype=np.float32), aff), p)
+        written.append(p)
+
+    if payload.magnitude is not None:
+        mag_spacing = (
+            payload.magnitude_voxel_size_mm
+            if payload.magnitude_voxel_size_mm is not None
+            else payload.voxel_size_mm
+        )
+        p = os.path.join(directory, f"{pre}_magnitude.nii.gz")
+        nib.save(
+            nib.Nifti1Image(np.asarray(payload.magnitude, dtype=np.float32), _affine(mag_spacing)),
+            p,
+        )
+        written.append(p)
+
+    meta_path = os.path.join(directory, f"{pre}.json")
+    with open(meta_path, "w") as f:
+        json.dump(_jsonable(payload.metadata), f, indent=2, sort_keys=True)
+    written.append(meta_path)
+
     return written
 
 
