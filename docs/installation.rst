@@ -32,20 +32,20 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/aaronta/elphy
+    $ git clone https://github.com/Elastography/elphy.git
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/aaronta/elphy/tarball/master
+    $ curl  -OL https://github.com/Elastography/elphy/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ pip install .
 
 
-.. _Github repo: https://github.com/aaronta/elphy
-.. _tarball: https://github.com/aaronta/elphy/tarball/master
+.. _Github repo: https://github.com/Elastography/elphy
+.. _tarball: https://github.com/Elastography/elphy/tarball/master

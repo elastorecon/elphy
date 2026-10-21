@@ -17,7 +17,7 @@ def load_mr_phase_select():
     outfile_file_types = []
     phase_loop = True
     num_phase_data = 0
-    while phase_loop:    
+    while phase_loop:
         root.ph_filename =  filedialog.askopenfilename(initialdir = "/",title = 'Select Phase Image File # '+str(num_phase_data+1),filetypes = (('NIfTI files','*.nii.gz'),('PAR files','*.PAR'),('all files','*.*')))
         if root.ph_filename:
             outfile_file_names.append(root.ph_filename)
@@ -28,7 +28,7 @@ def load_mr_phase_select():
                 parrec=True
                 try:
                     ph_img.append(nib.load(root.ph_filename,strict_sort=True))
-                except IOError:
+                except OSError:
                     print('Phase Data File Load Error!!! Invalid data file selected!!!')
             else:
                 print('Processing NIfTI Files:')
@@ -59,5 +59,5 @@ def load_mr_mag_select():
             except:
                 print('Phase Data File Load Error!!! Invalid data file selected!!!')
         else:
-            print('No Magnitude File Selected!!!')          
+            print('No Magnitude File Selected!!!')
     root.destroy

@@ -1,0 +1,43 @@
+priorities:
+  first_deliverable: "architecture_skeleton | reference_port | bids_datamodel"
+  api_style: "functional_mre_* | class_based"
+  notes: ""
+
+bids:
+  layout_example: |
+    sub-01/
+      ses-01/
+        ...
+  derivative_names:
+    phase: ""
+    magnitude: ""
+    mask: ""
+    wavefield: ""
+    stiffness: ""
+
+acquisition:
+  fov_mm: null            # or "from_header"
+  meg:
+    amplitude_T_per_m: null
+    duration_ms: null
+    n_bipolar_lobes: null
+  drive_frequencies_hz: []
+  n_phase_offsets: null
+  n_directions: 3
+  encoding_layout: "posneg_MEG x 3dir x offsets"
+  phase_to_disp: "muthupillai_formula | fixed_constant"
+  fixed_constant_value: 1.764
+
+boundary:
+  downstream_solvers: []        # e.g. ["NLI_MRE-Zone", "MDEV"]
+  export_format: "nifti+json | mat | other"
+  masking: "pure_python | fsl_bet2 | itk_snap"
+  unwrapping: "skimage | fsl_prelude | other"
+  other_private_codes: []       # name + how invoked
+
+practical:
+  example_dataset_available: false
+  python_version: "3.x"
+  modernize_packaging: true
+  license: "MIT"
+  credits: []

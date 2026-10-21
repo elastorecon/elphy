@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elphy"
+description = "General tools for magnetic resonance elastography (MRE): loading reconstructed images, building complex displacement wavefields, and material-property analysis."
+readme = "README.rst"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Aaron T Anderson", email = "aandrsn3@illinois.edu" },
+]
+keywords = [
+    "MRE",
+    "magnetic resonance elastography",
+    "elastography",
+    "MRI",
+    "neuroimaging",
+    "wavefield",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "numpy>=1.20",
+    "scipy>=1.6",
+    "h5py>=3.0",
+    "nibabel>=3.0",
+    "scikit-image>=0.18",
+    "Click>=6.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "coverage>=6.0",
+    "ruff>=0.6",
+    "build>=1.0",
+    "sphinx>=5.0",
+    "tox>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Elastography/elphy"
+Repository = "https://github.com/Elastography/elphy"
+Documentation = "https://elphy.readthedocs.io"
+
+[project.scripts]
+elphy = "elphy.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "elphy.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["elphy"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.ruff]
+line-length = 99
+src = ["src", "tests"]
+target-version = "py310"
+# Legacy placeholder stubs inherited from the original cookiecutter
+# skeleton (tkinter-coupled, not yet ported to the new API). Excluded
+# from linting until they are rewritten or removed.
+extend-exclude = [
+    "src/elphy/elphy_file.py",
+    "src/elphy/geometry_class_def.py",
+    "src/elphy/measure_class_def.py",
+    "docs/conf.py",
+]
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: isort, UP: pyupgrade,
+# B: flake8-bugbear, C4: comprehensions, NPY: numpy-specific.
+select = ["E", "W", "F", "I", "UP", "B", "C4", "NPY"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B"]
